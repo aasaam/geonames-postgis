@@ -1,0 +1,22 @@
+version: "3"
+
+services:
+  postgis:
+    image: postgis/postgis:13-3.1
+    container_name: postgis
+    ports:
+      - 5432:5432
+    volumes:
+      - ./init.db:/docker-entrypoint-initdb.d
+      - ./var/geonames_extract:/geonames_extract
+    environment:
+      - POSTGRES_PASSWORD=geonames
+      - POSTGRES_USER=geonames
+      - POSTGRES_DB=geonames
+  adminer:
+    image: adminer
+    depends_on:
+      - postgis
+    container_name: adminer
+    ports:
+      - 8080:8080

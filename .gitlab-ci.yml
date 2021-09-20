@@ -1,0 +1,40 @@
+# Copyright (c) 2021 aasaam software development group
+image: docker:stable
+
+services:
+  - docker:dind
+
+stages:
+  - build
+
+variables:
+  DOCKER_DRIVER: overlay2
+
+before_script:
+  - docker login --username=$DOCKER_HUB_USER --password=$DOCKER_HUB_PASS
+  - docker login --username=$QUAY_HUB_USER --password=$QUAY_HUB_PASS quay.io
+  - docker login --username=$GITHUB_HUB_USER --password=$GITHUB_HUB_PASS docker.pkg.github.com
+
+build:
+  stage: build
+  script:
+    # build
+    - apk add --no-cache wget ca-certificates p7zip bash
+    - ./download.sh
+    - docker run --name geonames-postgis -p 5432:5432 -e POSTGRES_PASSWORD=geonames -e POSTGRES_USER=geonames -e POSTGRES_DB=geonames -v ./init.db:/docker-entrypoint-initdb.d -v ./var/geonames_extract:/geonames_extract -v ./var/postgresql:/var/lib/postgresql/data -d postgis/postgis:13-3.1
+    - docker build -f Dockerfile.build-app -t geonames-postgis-build-app .
+    - docker run --name geonames-postgis-build-app tail -f /dev/null -d
+    - docker cp geonames-postgis-build-app:/src/geodata ./geodata
+    - chmox +x /geodata
+    - ./geodata
+    - docker stop geonames-postgis
+    - docker build -f Dockerfile -t aasaam/geonames-postgis-build-app .
+    # push
+    - |
+      docker push aasaam/geonames-postgis
+      docker image tag aasaam/geonames-postgis quay.io/aasaam/geonames-postgis
+      docker push quay.io/aasaam/geonames-postgis
+      docker image tag aasaam/geonames-postgis docker.pkg.github.com/aasaam/geonames-postgis/geonames-postgis
+      docker push docker.pkg.github.com/aasaam/geonames-postgis/geonames-postgis
+    # remove image
+    - docker rmi aasaam/geonames-postgis
