@@ -4,5 +4,5 @@ ADD . /src
 
 RUN cd /src \
   && go mod tidy \
-  && go mod download
+  && go mod download \
   && go build -ldflags="-s -w" -o geodata
