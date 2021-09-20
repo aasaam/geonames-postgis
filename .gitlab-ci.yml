@@ -27,7 +27,7 @@ build:
     - docker build -f Dockerfile.build-app -t geonames-postgis-build-app .
     - docker run --name geonames-postgis-build-app -d geonames-postgis-build-app tail -f /dev/null
     - docker cp geonames-postgis-build-app:/src/geodata ./geodata
-    - chmox +x /geodata
+    - chmod +x /geodata
     - ./geodata
     - docker stop geonames-postgis
     - docker build -f Dockerfile -t aasaam/geonames-postgis-build-app .
