@@ -4,10 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
-	"os"
-	"time"
 
-	"github.com/cheggaaa/pb/v3"
 	_ "github.com/lib/pq"
 )
 
@@ -33,7 +30,7 @@ type tmp_geonameid struct {
 
 type GeoNameLang map[string]string
 
-func getProgress(db *sql.DB) *pb.ProgressBar {
+func getProgress(db *sql.DB) int {
 	rows, err := db.Query(`
 		SELECT
 			COUNT(*)
@@ -53,16 +50,7 @@ func getProgress(db *sql.DB) *pb.ProgressBar {
 		}
 	}
 
-	// create bar
-	bar := pb.New(num)
-
-	// refresh info every second (default 200ms)
-	bar.SetRefreshRate(time.Second * 5)
-	bar.SetWriter(os.Stdout)
-
-	bar.Start()
-
-	return bar
+	return num
 }
 
 func buildGeoData(db *sql.DB) {
@@ -70,8 +58,8 @@ func buildGeoData(db *sql.DB) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println("Ready to insert...")
-	progressBar := getProgress(db)
+
+	totalNumbers := getProgress(db)
 
 	rows, err := db.Query(`
 		SELECT
@@ -100,7 +88,9 @@ func buildGeoData(db *sql.DB) {
 	}
 	defer rows.Close()
 
+	i := 0
 	for rows.Next() {
+		i++
 		var r tmp_geonameid
 
 		err2 := rows.Scan(
@@ -122,7 +112,11 @@ func buildGeoData(db *sql.DB) {
 			&r.timezone,
 			&r.modificationDate,
 		)
-		progressBar.Increment()
+
+		if (i % 1000) == 0 {
+			fmt.Printf("Current %d/%d\n", i, totalNumbers)
+		}
+
 		if err2 == nil {
 
 			countryGeoId, isCountryCodeExist := isoToGeonameID[r.countryCode]
