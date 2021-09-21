@@ -118,12 +118,31 @@ func getDb() (*sql.DB, bool) {
 	if connectionString == "" {
 		connectionString = "postgres://geonames:geonames@127.0.0.1/geonames?sslmode=disable"
 	}
-	db, err := sql.Open("postgres", connectionString)
-	if err != nil {
-		return nil, false
+	db, err1 := sql.Open("postgres", connectionString)
+	if err1 == nil {
+		rows, err2 := db.Query(`
+			SELECT
+				COUNT(*)
+			FROM "tmp_ready"
+		`)
+		if err2 != nil {
+			return db, false
+		}
+		defer rows.Close()
+
+		var num int = 0
+		for rows.Next() {
+			err3 := rows.Scan(&num)
+			if err3 != nil {
+				return db, false
+			}
+		}
+		if num > 1 {
+			return db, true
+		}
 	}
 
-	return db, true
+	return nil, false
 }
 
 func main() {
@@ -155,6 +174,7 @@ func main() {
 	db.Exec(`DROP TABLE "tmp_countryInfo";`)
 	db.Exec(`DROP TABLE "tmp_geonameid";`)
 	db.Exec(`DROP TABLE "tmp_alternateNamesV2";`)
+	db.Exec(`DROP TABLE "tmp_ready";`)
 
 	fmt.Println("Process geo data")
 	db.Exec(`VACUUM(FULL, ANALYZE) "countryInfo";`)

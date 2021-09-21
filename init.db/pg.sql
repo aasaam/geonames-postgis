@@ -88,12 +88,9 @@ CREATE TABLE IF NOT EXISTS "tmp_shapesAllLow" (
   "polygonData" TEXT
 );
 
--- IMPORT TEMPORARY DATA
-COPY "tmp_shapesAllLow" FROM '/geonames_extract/shapes_all_low.tsv' DELIMITER E'\t';
-COPY "tmp_countryInfo" FROM '/geonames_extract/countryInfo.tsv' DELIMITER E'\t';
-COPY "tmp_hierarchy" FROM '/geonames_extract/hierarchy.tsv' DELIMITER E'\t';
-COPY "tmp_alternateNamesV2" FROM '/geonames_extract/alternateNamesV2.tsv' DELIMITER E'\t';
-COPY "tmp_geonameid" FROM '/geonames_extract/allCountries.tsv' DELIMITER E'\t';
+CREATE TABLE IF NOT EXISTS "tmp_ready" (
+  "field1" INT
+);
 
 -- PRODUCTION DATABASE
 
@@ -146,30 +143,11 @@ ON "geo" USING btree ("admin1Code");
 CREATE INDEX "geo_location"
 ON "geo" USING GIST ("location");
 
--- FUNCTIONS
+-- IMPORT TEMPORARY DATA
+COPY "tmp_shapesAllLow" FROM '/geonames_extract/shapes_all_low.tsv' DELIMITER E'\t';
+COPY "tmp_countryInfo" FROM '/geonames_extract/countryInfo.tsv' DELIMITER E'\t';
+COPY "tmp_hierarchy" FROM '/geonames_extract/hierarchy.tsv' DELIMITER E'\t';
+COPY "tmp_alternateNamesV2" FROM '/geonames_extract/alternateNamesV2.tsv' DELIMITER E'\t';
+COPY "tmp_geonameid" FROM '/geonames_extract/allCountries.tsv' DELIMITER E'\t';
 
--- CREATE OR REPLACE FUNCTION aasaam_geo_get_country_by_point(latitude REAL, longitude REAL) RETURNS SETOF RECORD $$
--- BEGIN
---   RETURN QUERY
---     SELECT * FROM "countryInfo"
---     WHERE ST_Within (ST_PointFromText(CONCAT('POINT(', longitude,' ', latitude, ')'), 4326), polygons)
---     LIMIT 1;
--- END;
--- $$ LANGUAGE plpgsql;
-
--- CREATE OR REPLACE FUNCTION aasaam_geo_get_country_neighbours(ident INT) RETURNS SETOF RECORD
--- AS $$
--- BEGIN
---   RETURN QUERY
---     SELECT * FROM "countryInfo" LIMIT 1
--- END;
--- $$ LANGUAGE plpgsql;
-
--- CREATE OR REPLACE FUNCTION aasaam_geo_get_country_neighbours(ident INT)RETURNS SETOF record
--- as $$
--- begin
---   RETURN QUERY SELECT * FROM "countryInfo"
--- end;
--- $$ language plpgsql;
-
-
+INSERT INTO "tmp_ready" ("field1") VALUES (1);
