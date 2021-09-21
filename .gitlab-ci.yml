@@ -12,13 +12,13 @@ variables:
 
 before_script:
   - docker login --username=$DOCKER_HUB_USER --password=$DOCKER_HUB_PASS
-  - docker login --username=$QUAY_HUB_USER --password=$QUAY_HUB_PASS quay.io
   - docker login --username=$GITHUB_HUB_USER --password=$GITHUB_HUB_PASS docker.pkg.github.com
 
 build:
   stage: build
   script:
     # build
+    - rm -rf var || true
     - docker rm -f geonames-postgis-build-app || true
     - docker rm -f geonames-postgis || true
     - apk add --no-cache wget ca-certificates p7zip bash
@@ -32,9 +32,5 @@ build:
     # push
     - |
       docker push aasaam/geonames-postgis
-      docker image tag aasaam/geonames-postgis quay.io/aasaam/geonames-postgis
-      docker push quay.io/aasaam/geonames-postgis
-      docker image tag aasaam/geonames-postgis docker.pkg.github.com/aasaam/geonames-postgis/geonames-postgis
-      docker push docker.pkg.github.com/aasaam/geonames-postgis/geonames-postgis
     # remove image
     - docker rmi aasaam/geonames-postgis

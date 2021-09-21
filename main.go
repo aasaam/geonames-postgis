@@ -119,6 +119,7 @@ func getDb() (*sql.DB, bool) {
 		connectionString = "postgres://geonames:geonames@127.0.0.1/geonames?sslmode=disable"
 	}
 	db, err1 := sql.Open("postgres", connectionString)
+
 	if err1 == nil {
 		rows, err2 := db.Query(`
 			SELECT
@@ -126,18 +127,20 @@ func getDb() (*sql.DB, bool) {
 			FROM "tmp_ready"
 		`)
 		if err2 != nil {
-			return db, false
+			return nil, false
 		}
 		defer rows.Close()
 
 		var num int = 0
 		for rows.Next() {
 			err3 := rows.Scan(&num)
+
 			if err3 != nil {
 				return db, false
 			}
 		}
-		if num > 1 {
+
+		if num > 0 {
 			return db, true
 		}
 	}
@@ -149,16 +152,12 @@ func main() {
 	isoToGeonameID = make(map[string]int)
 
 	var db *sql.DB
-	var okDB bool
-	for {
+	var okDB bool = false
+	for !okDB {
 		fmt.Println("Try connect to database")
 		db, okDB = getDb()
 
-		if okDB {
-			fmt.Println("Connected to database")
-			break
-		}
-		time.Sleep(time.Second * 15)
+		time.Sleep(time.Second * 5)
 	}
 
 	isoToGeonameID, _ = getIsoToGeonameID(db)
