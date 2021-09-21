@@ -128,6 +128,7 @@ func getDb() (*sql.DB, bool) {
 		`)
 		if err2 != nil {
 			fmt.Println(err2)
+			db.Close()
 			return nil, false
 		}
 		defer rows.Close()
@@ -138,7 +139,8 @@ func getDb() (*sql.DB, bool) {
 
 			if err3 != nil {
 				fmt.Println(err3)
-				return db, false
+				db.Close()
+				return nil, false
 			}
 		}
 
@@ -146,6 +148,7 @@ func getDb() (*sql.DB, bool) {
 			return db, true
 		}
 	} else {
+
 		fmt.Println(err1)
 	}
 
@@ -161,7 +164,7 @@ func main() {
 		fmt.Println("Try connect to database")
 		db, okDB = getDb()
 
-		time.Sleep(time.Second * 5)
+		time.Sleep(time.Second * 15)
 	}
 
 	isoToGeonameID, _ = getIsoToGeonameID(db)
