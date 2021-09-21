@@ -5,4 +5,7 @@ ADD . /src
 RUN cd /src \
   && go mod tidy \
   && go mod download \
-  && go build -ldflags="-s -w" -o geodata
+  && go build -ldflags="-s -w" -o geodata \
+  && mv geodata /usr/bin/geodata
+
+ENTRYPOINT ["/usr/bin/geodata"]
