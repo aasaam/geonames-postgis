@@ -2,16 +2,13 @@ package main
 
 import (
 	"database/sql"
-	"encoding/json"
 	"fmt"
 	"log"
 	"os"
-	"regexp"
 	"time"
 
 	"github.com/cheggaaa/pb/v3"
 	_ "github.com/lib/pq"
-	"golang.org/x/text/language"
 )
 
 type tmp_geonameid struct {
@@ -34,66 +31,7 @@ type tmp_geonameid struct {
 	modificationDate string
 }
 
-type tmp_hierarchy struct {
-	geonameid_1 int
-	geonameid_2 int
-	relation    string
-}
-
-type tmp_alternateNamesV2 struct {
-	geonameid   int
-	isolanguage string
-	name        string
-}
-
 type GeoNameLang map[string]string
-
-var faRegexMatch = regexp.MustCompile(`[آابپتثجچحخدذرزژسشصضطظعغفقکگلمنوهیيك]+`)
-var faRegexReplace = regexp.MustCompile(`[^آابپتثجچحخدذرزژسشصضطظعغفقکگلمنوهیيك ]`)
-
-func findAlternativeNames(db *sql.DB, geonameid int) map[string]string {
-	translate := make(map[string]string)
-	rows, err := db.Query(`
-		SELECT
-			"geonameid",
-			"isolanguage",
-			"name"
-		FROM "tmp_alternateNamesV2" WHERE "geonameid" = $1 ORDER BY "alternateNameId" ASC, "isPreferredName" ASC
-	`, geonameid)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer rows.Close()
-
-	// langData := make(map[string]map[string]float64)
-
-	for rows.Next() {
-		var r tmp_alternateNamesV2
-		rows.Scan(
-			&r.geonameid,
-			&r.isolanguage,
-			&r.name,
-		)
-
-		if _, ok := translate[r.isolanguage]; ok {
-			continue
-		}
-
-		tag, err3 := language.ParseBase(r.isolanguage)
-		if err3 == nil && tag.String() == r.isolanguage {
-			if r.isolanguage == "fa" {
-				if faRegexMatch.MatchString(r.name) {
-					translate[r.isolanguage] = faRegexReplace.ReplaceAllString(r.name, "")
-				}
-			} else {
-				translate[r.isolanguage] = r.name
-			}
-		}
-
-	}
-
-	return translate
-}
 
 func getProgress(db *sql.DB) *pb.ProgressBar {
 	rows, err := db.Query(`
@@ -184,7 +122,7 @@ func buildGeoData(db *sql.DB) {
 			&r.timezone,
 			&r.modificationDate,
 		)
-
+		progressBar.Increment()
 		if err2 == nil {
 
 			countryGeoId, isCountryCodeExist := isoToGeonameID[r.countryCode]
@@ -192,16 +130,13 @@ func buildGeoData(db *sql.DB) {
 				continue
 			}
 
-			translates := findAlternativeNames(db, r.geonameid)
-			names, _ := json.Marshal(translates)
-
 			population := NewNullInt64(r.population)
 
 			elevation := NewNullInt64(r.elevation)
 			dem := NewNullInt64(r.dem)
 
-			processGeoFields(db, &r, countryGeoId, names, elevation, population, dem)
-			progressBar.Increment()
+			processGeoFields(db, &r, countryGeoId, elevation, population, dem)
+
 		}
 	}
 }
@@ -210,7 +145,6 @@ func processGeoFields(
 	db *sql.DB,
 	tmpRow *tmp_geonameid,
 	countryGeoId int,
-	names []byte,
 	elevation sql.NullInt64,
 	population sql.NullInt64,
 	dem sql.NullInt64,
@@ -219,7 +153,6 @@ func processGeoFields(
 		INSERT INTO "geo" (
 			"geonameid",
 			"name",
-			"name_i18n",
 			"location",
 			"featureClass",
 			"featureCode",
@@ -235,8 +168,8 @@ func processGeoFields(
 		) VALUES(
 			$1,
 			$2,
-			$3,
-			ST_GeomFromText($4),
+			ST_GeomFromText($3),
+			$4,
 			$5,
 			$6,
 			$7,
@@ -246,13 +179,11 @@ func processGeoFields(
 			$11,
 			$12,
 			$13,
-			$14,
-			$15
+			$14
 		)
 	`,
 		tmpRow.geonameid,
 		fixName(tmpRow.asciiname),
-		names,
 		fmt.Sprintf("Point(%s %s)", tmpRow.longitude, tmpRow.latitude),
 		tmpRow.featureClass,
 		tmpRow.featureCode,

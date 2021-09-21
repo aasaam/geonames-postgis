@@ -5,22 +5,6 @@ CREATE EXTENSION postgis;
 
 -- TEMPORARY TABLES
 
-CREATE TABLE IF NOT EXISTS "tmp_alternateNamesV2" (
-  "alternateNameId" INT,
-  "geonameid" INT,
-  "isolanguage" VARCHAR(16),
-  "name" VARCHAR(512),
-  "isPreferredName" VARCHAR(512),
-  "isShortName" VARCHAR(512),
-  "isColloquial" VARCHAR(512),
-  "isHistoric" VARCHAR(512),
-  "from" VARCHAR(512),
-  "to" VARCHAR(512)
-);
-
-CREATE INDEX concurrently "tmp_alternateNamesV2_geonameid_isolanguage"
-ON "tmp_alternateNamesV2" USING btree ("geonameid", "isolanguage");
-
 CREATE TABLE IF NOT EXISTS "tmp_geonameid" (
   "geonameid" INT,
   "name" VARCHAR(256),
@@ -71,18 +55,6 @@ CREATE TABLE IF NOT EXISTS "tmp_countryInfo" (
   "equivalentFipsCode" TEXT
 );
 
-CREATE TABLE IF NOT EXISTS "tmp_hierarchy" (
-  "geonameid_1" INT,
-  "geonameid_2" INT,
-  "relation" VARCHAR(256)
-);
-
-CREATE INDEX concurrently "tmp_hierarchy_geonameid_1"
-ON "tmp_hierarchy" USING btree ("geonameid_1");
-
-CREATE INDEX concurrently "tmp_hierarchy_geonameid_2"
-ON "tmp_hierarchy" USING btree ("geonameid_2");
-
 CREATE TABLE IF NOT EXISTS "tmp_shapesAllLow" (
   "geonameid_1" INT,
   "polygonData" TEXT
@@ -115,8 +87,6 @@ ON "countryInfo" USING GIST ("polygons");
 CREATE TABLE IF NOT EXISTS "geo" (
   "geonameid" INT PRIMARY KEY,
   "name" VARCHAR(256),
-  "name_i18n" JSONB,
-  "location" geography(POINT, 4326),
   "featureClass" VARCHAR(5),
   "featureCode" VARCHAR(15),
   "country" INT,
@@ -128,6 +98,7 @@ CREATE TABLE IF NOT EXISTS "geo" (
   "elevation" INT,
   "dem" INT,
   "timezone" VARCHAR(63),
+  "location" geography(POINT, 4326),
   CONSTRAINT "geo_country__countryInfo_geonameid" FOREIGN KEY("country") REFERENCES "countryInfo"("geonameid")
 );
 
@@ -146,8 +117,6 @@ ON "geo" USING GIST ("location");
 -- IMPORT TEMPORARY DATA
 COPY "tmp_shapesAllLow" FROM '/geonames_extract/shapes_all_low.tsv' DELIMITER E'\t';
 COPY "tmp_countryInfo" FROM '/geonames_extract/countryInfo.tsv' DELIMITER E'\t';
-COPY "tmp_hierarchy" FROM '/geonames_extract/hierarchy.tsv' DELIMITER E'\t';
-COPY "tmp_alternateNamesV2" FROM '/geonames_extract/alternateNamesV2.tsv' DELIMITER E'\t';
-COPY "tmp_geonameid" FROM '/geonames_extract/allCountries.tsv' DELIMITER E'\t';
+COPY "tmp_geonameid" FROM '/geonames_extract/geonameid.tsv' DELIMITER E'\t';
 
 INSERT INTO "tmp_ready" ("field1") VALUES (1);
