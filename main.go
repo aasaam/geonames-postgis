@@ -127,6 +127,7 @@ func getDb() (*sql.DB, bool) {
 			FROM "tmp_ready"
 		`)
 		if err2 != nil {
+			fmt.Println(err2)
 			return nil, false
 		}
 		defer rows.Close()
@@ -136,6 +137,7 @@ func getDb() (*sql.DB, bool) {
 			err3 := rows.Scan(&num)
 
 			if err3 != nil {
+				fmt.Println(err3)
 				return db, false
 			}
 		}
@@ -143,6 +145,8 @@ func getDb() (*sql.DB, bool) {
 		if num > 0 {
 			return db, true
 		}
+	} else {
+		fmt.Println(err1)
 	}
 
 	return nil, false
