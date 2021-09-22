@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
-	"log"
 	"math"
 	"os"
 	"os/exec"
@@ -160,12 +159,16 @@ func getDb() (*sql.DB, bool) {
 func dockerLogs() {
 	out1, err1 := exec.Command("/usr/local/bin/docker", "ps", "-a").Output()
 	if err1 != nil {
-		log.Fatal(err1)
+		fmt.Println("error: =====")
+		fmt.Println(err1)
+		fmt.Println("============")
 	}
 	fmt.Printf("docker ps\n%s\n", out1)
-	out2, err2 := exec.Command("/usr/local/bin/docker", "logs", "-n", "10").Output()
+	out2, err2 := exec.Command("/usr/local/bin/docker", "logs", "geonames-postgis", "-n", "10").Output()
 	if err2 != nil {
-		log.Fatal(err2)
+		fmt.Println("error: =====")
+		fmt.Println(err2)
+		fmt.Println("============")
 	}
 	fmt.Printf("docker logs\n%s\n", out2)
 }
