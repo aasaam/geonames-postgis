@@ -181,6 +181,9 @@ func main() {
 	for !okDB {
 		fmt.Println("Try connect to database")
 		db, okDB = getDb()
+		if okDB {
+			break
+		}
 
 		dockerLogs()
 		time.Sleep(time.Second * 15)
