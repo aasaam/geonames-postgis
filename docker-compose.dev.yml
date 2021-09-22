@@ -9,6 +9,7 @@ services:
     volumes:
       - ./init.db:/docker-entrypoint-initdb.d
       - ./var/geonames_extract:/geonames_extract
+      - ./var/postgresql:/var/lib/postgresql/data
     environment:
       - POSTGRES_PASSWORD=geonames
       - POSTGRES_USER=geonames

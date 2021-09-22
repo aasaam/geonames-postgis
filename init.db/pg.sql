@@ -5,6 +5,13 @@ CREATE EXTENSION postgis;
 
 -- TEMPORARY TABLES
 
+CREATE TABLE IF NOT EXISTS "tmp_admin1Codes" (
+  "code" VARCHAR(256),
+  "name" VARCHAR(256),
+  "asciiname" VARCHAR(256),
+  "geonameid" INT
+);
+
 CREATE TABLE IF NOT EXISTS "tmp_geonameid" (
   "geonameid" INT,
   "name" VARCHAR(256),
@@ -84,37 +91,28 @@ CREATE TABLE IF NOT EXISTS "countryInfo" (
 CREATE INDEX "countryInfo_polygons"
 ON "countryInfo" USING GIST ("polygons");
 
+CREATE TABLE IF NOT EXISTS "adminCode" (
+  "id" INT PRIMARY KEY,
+  "name" VARCHAR(256)
+);
+
 CREATE TABLE IF NOT EXISTS "geo" (
   "geonameid" INT PRIMARY KEY,
   "name" VARCHAR(256),
-  "featureClass" VARCHAR(5),
-  "featureCode" VARCHAR(15),
   "country" INT,
-  "admin1Code" VARCHAR(23),
-  "admin2Code" VARCHAR(95),
-  "admin3Code" VARCHAR(23),
-  "admin4Code" VARCHAR(23),
+  "adminCode" INT,
   "population" BIGINT,
-  "elevation" INT,
-  "dem" INT,
   "timezone" VARCHAR(63),
   "location" geography(POINT, 4326),
-  CONSTRAINT "geo_country__countryInfo_geonameid" FOREIGN KEY("country") REFERENCES "countryInfo"("geonameid")
+  CONSTRAINT "geo_country__countryInfo_geonameid" FOREIGN KEY("country") REFERENCES "countryInfo"("geonameid"),
+  CONSTRAINT "geo_adminCode__adminCode_id" FOREIGN KEY("adminCode") REFERENCES "adminCode"("id")
 );
-
-CREATE INDEX concurrently "geo_featureClass"
-ON "geo" USING btree ("featureClass");
-
-CREATE INDEX concurrently "geo_featureCode"
-ON "geo" USING btree ("featureCode");
-
-CREATE INDEX concurrently "geo_admin1Code"
-ON "geo" USING btree ("admin1Code");
 
 CREATE INDEX "geo_location"
 ON "geo" USING GIST ("location");
 
 -- IMPORT TEMPORARY DATA
+COPY "tmp_admin1Codes" FROM '/geonames_extract/admin1CodesASCII.tsv' DELIMITER E'\t';
 COPY "tmp_shapesAllLow" FROM '/geonames_extract/shapes_all_low.tsv' DELIMITER E'\t';
 COPY "tmp_countryInfo" FROM '/geonames_extract/countryInfo.tsv' DELIMITER E'\t';
 COPY "tmp_geonameid" FROM '/geonames_extract/geonameid.tsv' DELIMITER E'\t';

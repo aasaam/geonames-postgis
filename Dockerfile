@@ -1,2 +1,2 @@
 FROM postgis/postgis:13-3.1
-COPY temp/postgresql /var/lib/postgresql/data
+COPY var/data /var/lib/postgresql/data

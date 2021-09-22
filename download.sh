@@ -8,6 +8,9 @@ SCRIPT_PATH=`realpath $SCRIPT_DIR`
 mkdir -p $SCRIPT_PATH/var/geonames
 mkdir -p $SCRIPT_PATH/var/geonames_extract
 
+# admin1Codes
+wget -c -O "$SCRIPT_PATH/var/geonames_extract/admin1CodesASCII.tsv" 'http://download.geonames.org/export/dump/admin1CodesASCII.txt'
+
 # geonameid
 wget -c -O "$SCRIPT_PATH/var/geonames/geonameid.zip" 'http://download.geonames.org/export/dump/cities500.zip'
 rm -rf $SCRIPT_PATH/var/tmp

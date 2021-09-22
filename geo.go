@@ -124,12 +124,19 @@ func buildGeoData(db *sql.DB) {
 				continue
 			}
 
+			adminCode1Name := r.countryCode + "." + r.admin1Code
+			adminCode1ID, ok := adminCodeMapList[adminCode1Name]
+
+			if !ok {
+				adminCode1ID = 0
+			}
+
 			population := NewNullInt64(r.population)
 
 			elevation := NewNullInt64(r.elevation)
 			dem := NewNullInt64(r.dem)
 
-			processGeoFields(db, &r, countryGeoId, elevation, population, dem)
+			processGeoFields(db, &r, adminCode1ID, countryGeoId, elevation, population, dem)
 
 		}
 	}
@@ -138,6 +145,7 @@ func buildGeoData(db *sql.DB) {
 func processGeoFields(
 	db *sql.DB,
 	tmpRow *tmp_geonameid,
+	adminCode1ID int,
 	countryGeoId int,
 	elevation sql.NullInt64,
 	population sql.NullInt64,
@@ -146,49 +154,28 @@ func processGeoFields(
 	_, err := db.Exec(`
 		INSERT INTO "geo" (
 			"geonameid",
-			"name",
 			"location",
-			"featureClass",
-			"featureCode",
+			"name",
 			"country",
-			"admin1Code",
-			"admin2Code",
-			"admin3Code",
-			"admin4Code",
+			"adminCode",
 			"population",
-			"elevation",
-			"dem",
 			"timezone"
 		) VALUES(
 			$1,
-			$2,
-			ST_GeomFromText($3),
+			ST_GeomFromText($2),
+			$3,
 			$4,
 			$5,
 			$6,
-			$7,
-			$8,
-			$9,
-			$10,
-			$11,
-			$12,
-			$13,
-			$14
+			$7
 		)
 	`,
 		tmpRow.geonameid,
-		fixName(tmpRow.asciiname),
 		fmt.Sprintf("Point(%s %s)", tmpRow.longitude, tmpRow.latitude),
-		tmpRow.featureClass,
-		tmpRow.featureCode,
+		fixName(tmpRow.asciiname),
 		countryGeoId,
-		tmpRow.admin1Code,
-		tmpRow.admin2Code,
-		tmpRow.admin3Code,
-		tmpRow.admin4Code,
+		NewNullInt64FromInt(adminCode1ID),
 		population,
-		elevation,
-		dem,
 		tmpRow.timezone,
 	)
 	if err != nil {

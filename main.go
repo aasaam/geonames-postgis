@@ -25,7 +25,7 @@ var nameFixReplace = regexp.MustCompile(`[^a-zA-Z0-9- ]`)
 func fixName(s string) string {
 	t := transform.Chain(norm.NFD, runes.Remove(runes.In(unicode.Mn)), norm.NFC)
 	result, _, _ := transform.String(t, s)
-	return nameFixReplace.ReplaceAllString(result, "")
+	return strings.Title(strings.ToLower(nameFixReplace.ReplaceAllString(result, "")))
 }
 
 func toInt(s string) int {
@@ -71,6 +71,16 @@ func NewNullInt64(s string) sql.NullInt64 {
 	}
 }
 
+func NewNullInt64FromInt(ii int) sql.NullInt64 {
+	if ii > 0 {
+		return sql.NullInt64{
+			Int64: int64(ii),
+			Valid: true,
+		}
+	}
+	return sql.NullInt64{}
+}
+
 func NewNullFloatInt(s string) sql.NullInt64 {
 	if len(s) == 0 || s == "" {
 		return sql.NullInt64{}
@@ -113,6 +123,7 @@ func PrettyPrint(data interface{}) {
 }
 
 var isoToGeonameID map[string]int
+var adminCodeMapList map[string]int
 
 func getDb() (*sql.DB, bool) {
 	connectionString := os.Getenv("POSTGRES_URI")
@@ -175,6 +186,7 @@ func dockerLogs() {
 
 func main() {
 	isoToGeonameID = make(map[string]int)
+	adminCodeMapList = make(map[string]int)
 
 	var db *sql.DB
 	var okDB bool = false
@@ -193,18 +205,22 @@ func main() {
 
 	fmt.Println("Process countries")
 	processCountryInfo(db)
+	fmt.Println("Process admin codes")
+	adminCodeMapList = adminCode(db)
 	fmt.Println("Process geo data")
 	buildGeoData(db)
 
-	fmt.Println("Drop temporary tables")
-	db.Exec(`DROP TABLE "tmp_shapesAllLow";`)
-	db.Exec(`DROP TABLE "tmp_hierarchy";`)
-	db.Exec(`DROP TABLE "tmp_countryInfo";`)
-	db.Exec(`DROP TABLE "tmp_geonameid";`)
-	db.Exec(`DROP TABLE "tmp_alternateNamesV2";`)
-	db.Exec(`DROP TABLE "tmp_ready";`)
+	// fmt.Println("Drop temporary tables")
+	// db.Exec(`DROP TABLE "tmp_shapesAllLow";`)
+	// db.Exec(`DROP TABLE "tmp_hierarchy";`)
+	// db.Exec(`DROP TABLE "tmp_countryInfo";`)
+	// db.Exec(`DROP TABLE "tmp_geonameid";`)
+	// db.Exec(`DROP TABLE "tmp_alternateNamesV2";`)
+	// db.Exec(`DROP TABLE "tmp_ready";`)
+	// db.Exec(`DROP TABLE "tmp_admin1Codes";`)
 
-	fmt.Println("Process geo data")
-	db.Exec(`VACUUM(FULL, ANALYZE) "countryInfo";`)
-	db.Exec(`VACUUM(FULL, ANALYZE) "geo";`)
+	// fmt.Println("Process geo data")
+	// db.Exec(`VACUUM(FULL, ANALYZE) "adminCode";`)
+	// db.Exec(`VACUUM(FULL, ANALYZE) "countryInfo";`)
+	// db.Exec(`VACUUM(FULL, ANALYZE) "geo";`)
 }
