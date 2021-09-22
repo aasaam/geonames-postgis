@@ -19,6 +19,7 @@ build:
   script:
     # build
     - rm -rf var || true
+    - whereis docker
     - docker rm -f geonames-postgis-build-app || true
     - docker rm -f geonames-postgis || true
     - apk add --no-cache wget ca-certificates p7zip bash
