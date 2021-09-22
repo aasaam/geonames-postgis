@@ -21,6 +21,8 @@ build:
     - docker rm -f geonames-postgis-build-app || true
     - docker rm -f geonames-postgis || true
     - rm -rf var || true
+    - ls -la $(pwd)/var || true
+    - ls -la $(pwd)/var/postgresql || true
     - apk add --no-cache wget ca-certificates p7zip bash util-linux
     - whereis docker
     - pwd
