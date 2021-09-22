@@ -164,7 +164,7 @@ func dockerLogs() {
 		fmt.Println("============")
 	}
 	fmt.Printf("docker ps\n%s\n", out1)
-	out2, err2 := exec.Command("/usr/local/bin/docker", "logs", "geonames-postgis", "-n", "10").Output()
+	out2, err2 := exec.Command("/usr/local/bin/docker", "logs", "geonames-postgis").Output()
 	if err2 != nil {
 		fmt.Println("error: =====")
 		fmt.Println(err2)
