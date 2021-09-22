@@ -4,8 +4,10 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"log"
 	"math"
 	"os"
+	"os/exec"
 	"regexp"
 	"strconv"
 	"strings"
@@ -155,6 +157,19 @@ func getDb() (*sql.DB, bool) {
 	return nil, false
 }
 
+func dockerLogs() {
+	out1, err1 := exec.Command("docker ps -a").Output()
+	if err1 != nil {
+		log.Fatal(err1)
+	}
+	fmt.Printf("docker ps\n%s\n", out1)
+	out2, err2 := exec.Command("docker logs -n 10").Output()
+	if err2 != nil {
+		log.Fatal(err2)
+	}
+	fmt.Printf("docker logs\n%s\n", out2)
+}
+
 func main() {
 	isoToGeonameID = make(map[string]int)
 
@@ -164,6 +179,7 @@ func main() {
 		fmt.Println("Try connect to database")
 		db, okDB = getDb()
 
+		dockerLogs()
 		time.Sleep(time.Second * 15)
 	}
 
