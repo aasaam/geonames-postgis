@@ -158,12 +158,12 @@ func getDb() (*sql.DB, bool) {
 }
 
 func dockerLogs() {
-	out1, err1 := exec.Command("/usr/local/bin/docker ps -a").Output()
+	out1, err1 := exec.Command("/usr/local/bin/docker", "ps", "-a").Output()
 	if err1 != nil {
 		log.Fatal(err1)
 	}
 	fmt.Printf("docker ps\n%s\n", out1)
-	out2, err2 := exec.Command("/usr/local/bin/docker logs -n 10").Output()
+	out2, err2 := exec.Command("/usr/local/bin/docker", "logs", "-n", "10").Output()
 	if err2 != nil {
 		log.Fatal(err2)
 	}
