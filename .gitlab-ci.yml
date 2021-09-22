@@ -28,7 +28,6 @@ build:
     - docker run --rm --entrypoint cat geonames-postgis-build-app /usr/bin/geodata > ./geodata
     - chmod +x ./geodata
     - ./geodata
-    - docker stop geonames-postgis
     - rm .dockerignore
     - docker build -f Dockerfile -t aasaam/geonames-postgis .
     # push
