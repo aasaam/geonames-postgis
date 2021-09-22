@@ -23,6 +23,7 @@ build:
     - docker rm -f geonames-postgis || true
     - apk add --no-cache wget ca-certificates p7zip bash util-linux
     - whereis docker
+    - pwd
     - ./download.sh
     - docker run --name geonames-postgis --net=host -e POSTGRES_PASSWORD=geonames -e POSTGRES_USER=geonames -e POSTGRES_DB=geonames -v $(pwd)/init.db:/docker-entrypoint-initdb.d -v $(pwd)/temp/geonames_extract:/geonames_extract -v $(pwd)/temp/postgresql:/var/lib/postgresql/data -d postgis/postgis:13-3.1
     - docker build -f Dockerfile.build-app -t geonames-postgis-build-app .
