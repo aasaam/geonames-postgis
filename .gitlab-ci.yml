@@ -26,6 +26,8 @@ build:
     - docker run --name geonames-postgis --net=host -e POSTGRES_PASSWORD=geonames -e POSTGRES_USER=geonames -e POSTGRES_DB=geonames -v $(pwd)/init.db/pg.sql:/docker-entrypoint-initdb.d/pg.sql -v $(pwd)/var/geonames_extract:/geonames_extract -d postgis/postgis:13-3.1
     - sleep 30
     - docker logs geonames-postgis
+    - sleep 30
+    - docker logs geonames-postgis
     - docker build -f Dockerfile.build-app -t geonames-postgis-build-app .
     - docker run --rm --entrypoint cat geonames-postgis-build-app /usr/bin/geodata > ./geodata
     - chmod +x ./geodata
