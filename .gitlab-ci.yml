@@ -28,7 +28,7 @@ build:
     - ls -la init.db/pg.sql
     - ls -la init.db
     - ls -la $PWD/init.db/pg.sql
-    - docker run --name geonames-postgis --net=host -e POSTGRES_PASSWORD=geonames -e POSTGRES_USER=geonames -e POSTGRES_DB=geonames -v $PWD/init.db/pg.sql:/docker-entrypoint-initdb.d/pg.sql -v $PWD/var/geonames_extract:/geonames_extract -d postgis/postgis:13-master
+    - docker run --name geonames-postgis --net=host -e POSTGRES_PASSWORD=geonames -e POSTGRES_USER=geonames -e POSTGRES_DB=geonames -v $PWD/init.db/pg.sql:/docker-entrypoint-initdb.d/01-pg.sql -v $PWD/var/geonames_extract:/geonames_extract -d postgis/postgis:13-master
     - sleep 30
     - docker logs geonames-postgis
     - sleep 30
