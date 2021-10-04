@@ -25,12 +25,8 @@ build:
     - ./download.sh
     - docker pull postgis/postgis:13-master
     - docker pull golang:1.17-alpine
-    - ls -la init.db/pg.sql
-    - ls -la init.db
-    - ls -la $PWD/init.db/pg.sql
-    - ls -lah $PWD/init.db/pg.sql
-    - chmod 644 $PWD/init.db/pg.sql
-    - docker run --name geonames-postgis --net=host -e POSTGRES_PASSWORD=geonames -e POSTGRES_USER=geonames -e POSTGRES_DB=geonames -v $PWD/init.db/pg.sql:/docker-entrypoint-initdb.d/01-init.sql -v $PWD/var/geonames_extract:/geonames_extract -d postgis/postgis:13-master
+    - docker build --no-cache --tag geonames-postgis -f Dockerfile.db .
+    - docker run --name geonames-postgis --name geonames-postgis --net=host -e POSTGRES_PASSWORD=geonames -e POSTGRES_USER=geonames -e POSTGRES_DB=geonames -d geonames-postgis
     - sleep 30
     - docker logs geonames-postgis
     - sleep 30
@@ -39,12 +35,12 @@ build:
     - docker run --rm --entrypoint cat geonames-postgis-build-app /usr/bin/geodata > ./geodata
     - chmod +x ./geodata
     - ./geodata
-    - docker stop geonames-postgis
-    - docker cp geonames-postgis:/var/lib/postgresql/data var/data
-    - rm .dockerignore
-    - docker build -f Dockerfile -t aasaam/geonames-postgis .
-    # push
-    - |
-      docker push aasaam/geonames-postgis
-    # remove image
-    - docker rmi aasaam/geonames-postgis
+    # - docker stop geonames-postgis
+    # - docker cp geonames-postgis:/var/lib/postgresql/data var/data
+    # - rm .dockerignore
+    # - docker build -f Dockerfile -t aasaam/geonames-postgis .
+    # # push
+    # - |
+    #   docker push aasaam/geonames-postgis
+    # # remove image
+    # - docker rmi aasaam/geonames-postgis
