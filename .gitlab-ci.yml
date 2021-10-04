@@ -20,21 +20,22 @@ build:
     # build
     - docker rm -f geonames-postgis-build-app || true
     - docker rm -f geonames-postgis || true
+    - docker rmi geonames-postgis || true
     - rm -rf var || true
     - apk add --no-cache wget ca-certificates p7zip bash util-linux
     - ./download.sh
-    - docker pull postgis/postgis:13-master
+    - docker pull postgis/postgis:13-3.1-alpine
     - docker pull golang:1.17-alpine
     - docker build --no-cache --tag geonames-postgis -f Dockerfile.db .
     - docker run --name geonames-postgis --name geonames-postgis --net=host -e POSTGRES_PASSWORD=geonames -e POSTGRES_USER=geonames -e POSTGRES_DB=geonames -d geonames-postgis
     - sleep 30
     - docker logs geonames-postgis
-    - sleep 30
-    - docker logs geonames-postgis
-    - docker build -f Dockerfile.build-app -t geonames-postgis-build-app .
-    - docker run --rm --entrypoint cat geonames-postgis-build-app /usr/bin/geodata > ./geodata
-    - chmod +x ./geodata
-    - ./geodata
+    # - sleep 30
+    # - docker logs geonames-postgis
+    # - docker build --no-cache --tag geonames-postgis-build-app -f Dockerfile.build-app .
+    # - docker run --rm --entrypoint cat geonames-postgis-build-app /usr/bin/geodata > ./geodata
+    # - chmod +x ./geodata
+    # - ./geodata
     # - docker stop geonames-postgis
     # - docker cp geonames-postgis:/var/lib/postgresql/data var/data
     # - rm .dockerignore
