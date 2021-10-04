@@ -23,7 +23,9 @@ build:
     - rm -rf var || true
     - apk add --no-cache wget ca-certificates p7zip bash util-linux
     - ./download.sh
-    - docker run --name geonames-postgis --net=host -e POSTGRES_PASSWORD=geonames -e POSTGRES_USER=geonames -e POSTGRES_DB=geonames -v $(pwd)/init.db/pg.sql:/docker-entrypoint-initdb.d/pg.sql -v $(pwd)/var/geonames_extract:/geonames_extract -d postgis/postgis:13-3.1
+    - docker pull postgis/postgis:13-master
+    - docker pull golang:1.17-alpine
+    - docker run --name geonames-postgis --net=host -e POSTGRES_PASSWORD=geonames -e POSTGRES_USER=geonames -e POSTGRES_DB=geonames -v $(pwd)/init.db/pg.sql:/docker-entrypoint-initdb.d/pg.sql -v $(pwd)/var/geonames_extract:/geonames_extract -d postgis/postgis:13-master
     - sleep 30
     - docker logs geonames-postgis
     - sleep 30
