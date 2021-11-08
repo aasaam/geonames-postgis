@@ -1,5 +1,5 @@
 # Copyright (c) 2021 aasaam software development group
 var/
 
-geonames
+geodata
 go.sum

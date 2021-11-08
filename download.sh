@@ -5,6 +5,7 @@ set -e
 SCRIPT_DIR=`dirname "0"`
 SCRIPT_PATH=`realpath $SCRIPT_DIR`
 
+rm -rf $SCRIPT_PATH/var || true
 mkdir -p $SCRIPT_PATH/var/geonames
 mkdir -p $SCRIPT_PATH/var/geonames_extract
 

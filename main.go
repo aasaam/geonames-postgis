@@ -223,4 +223,5 @@ func main() {
 	db.Exec(`VACUUM(FULL, ANALYZE) "adminCode";`)
 	db.Exec(`VACUUM(FULL, ANALYZE) "countryInfo";`)
 	db.Exec(`VACUUM(FULL, ANALYZE) "geo";`)
+	fmt.Println("Process application done")
 }
