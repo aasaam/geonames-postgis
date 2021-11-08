@@ -197,7 +197,7 @@ func main() {
 			break
 		}
 
-		dockerLogs()
+		// dockerLogs()
 		time.Sleep(time.Second * 15)
 	}
 
