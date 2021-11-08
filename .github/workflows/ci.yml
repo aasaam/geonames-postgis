@@ -34,3 +34,15 @@ jobs:
         run: |
           ./download.sh
           ./build.sh
+      -
+        name: Push image
+        run: |
+          ./download.sh
+          ./build.sh
+          docker push aasaam/geonames-postgis
+      - name: Docker Hub Description
+        uses: peter-evans/dockerhub-description@v2
+        with:
+          username: ${{ secrets.DOCKER_HUB_USER }}
+          password: ${{ secrets.DOCKER_HUB_PASS }}
+          repository: aasaam/geonames-postgis
