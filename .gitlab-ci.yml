@@ -27,7 +27,7 @@ build:
     - docker pull postgis/postgis:13-3.1-alpine
     - docker pull golang:1.17-alpine
     - docker build --no-cache --tag geonames-postgis -f Dockerfile.db .
-    - docker run --name geonames-postgis --name geonames-postgis -p 5432:5432 -e POSTGRES_PASSWORD=geonames -e POSTGRES_USER=geonames -e POSTGRES_DB=geonames -d geonames-postgis
+    - docker run --name geonames-postgis --name geonames-postgis -p 5432:5432 -e POSTGRES_PASSWORD=geonames -e POSTGRES_USER=geonames -e POSTGRES_DB=geonames -d postgis/postgis:13-3.1-alpine
     - sleep 30
     - docker logs geonames-postgis
     - docker build --no-cache --tag geonames-postgis-build-app -f Dockerfile.build-app .
