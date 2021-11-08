@@ -37,8 +37,6 @@ jobs:
       -
         name: Push image
         run: |
-          ./download.sh
-          ./build.sh
           docker push aasaam/geonames-postgis
       - name: Docker Hub Description
         uses: peter-evans/dockerhub-description@v2
