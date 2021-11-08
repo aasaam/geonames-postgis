@@ -17,6 +17,7 @@ docker run --name geonames-postgis --name geonames-postgis \
   -d geonames-postgis
 
 echo "Building process application"
+go mod tidy
 go build -o geodata
 echo "Running process application"
 ./geodata
