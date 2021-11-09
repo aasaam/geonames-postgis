@@ -2,7 +2,7 @@ version: "3"
 
 services:
   postgis:
-    image: aasaam/geonames-postgis
+    image: ghcr.io/aasaam/geonames-postgis:latest
     container_name: geonames-postgis
     ports:
       - 5432:5432
