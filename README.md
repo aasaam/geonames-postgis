@@ -14,7 +14,9 @@
   </p>
 </div>
 
-This database is pure latest stable version of postgres/postgis, that process data from [geonames.org](https://www.geonames.org/) and process countries, administrator code and geo names that featureClass is administrator area or population place.
+This database is pure latest stable version of postgres/postgis (14), that process data from [geonames.org](https://www.geonames.org/) and process countries, administrator code and geo names that featureClass is administrator area or population place.
+
+Database will update schedule every week.
 
 ## Database structure
 
