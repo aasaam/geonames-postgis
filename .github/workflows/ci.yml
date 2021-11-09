@@ -39,7 +39,7 @@ jobs:
       -
         name: Push image
         run: |
-          echo $GH_PERSONAL_ACCESS_TOKEN | docker login ghcr.io -u USERNAME --password-stdin
+          echo $GH_PERSONAL_ACCESS_TOKEN | docker login ghcr.io -u $GH_PERSONAL_USERNAME --password-stdin
           docker push aasaam/geonames-postgis
           docker image tag aasaam/geonames-postgis ghcr.io/aasaam/geonames-postgis
           docker push ghcr.io/aasaam/geonames-postgis
