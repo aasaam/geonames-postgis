@@ -37,10 +37,12 @@ jobs:
           ./download.sh
           ./build.sh
       -
-        name: Push image
+        name: Push image docker hub
         run: |
-          echo $GH_PERSONAL_ACCESS_TOKEN | docker login ghcr.io -u $GH_PERSONAL_USERNAME --password-stdin
           docker push aasaam/geonames-postgis
+      -
+        name: Push image github container registry
+        run: |
           docker image tag aasaam/geonames-postgis ghcr.io/aasaam/geonames-postgis
           docker push ghcr.io/aasaam/geonames-postgis
       - name: Docker Hub Description
