@@ -10,3 +10,10 @@ services:
       - POSTGRES_PASSWORD=geonames
       - POSTGRES_USER=geonames
       - POSTGRES_DB=geonames
+  adminer:
+    image: adminer
+    depends_on:
+      - postgis
+    container_name: adminer
+    ports:
+      - 8080:8080

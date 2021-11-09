@@ -39,7 +39,10 @@ jobs:
       -
         name: Push image
         run: |
+          echo $GH_PERSONAL_ACCESS_TOKEN | docker login ghcr.io -u USERNAME --password-stdin
           docker push aasaam/geonames-postgis
+          docker image tag aasaam/geonames-postgis ghcr.io/aasaam/geonames-postgis
+          docker push ghcr.io/aasaam/geonames-postgis
       - name: Docker Hub Description
         uses: peter-evans/dockerhub-description@v2
         with:
