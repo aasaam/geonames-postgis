@@ -212,10 +212,8 @@ func main() {
 
 	fmt.Println("Drop temporary tables")
 	db.Exec(`DROP TABLE "tmp_shapesAllLow";`)
-	db.Exec(`DROP TABLE "tmp_hierarchy";`)
 	db.Exec(`DROP TABLE "tmp_countryInfo";`)
 	db.Exec(`DROP TABLE "tmp_geonameid";`)
-	db.Exec(`DROP TABLE "tmp_alternateNamesV2";`)
 	db.Exec(`DROP TABLE "tmp_ready";`)
 	db.Exec(`DROP TABLE "tmp_admin1Codes";`)
 

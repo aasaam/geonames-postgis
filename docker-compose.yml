@@ -1,0 +1,12 @@
+version: "3"
+
+services:
+  postgis:
+    image: aasaam/geonames-postgis
+    container_name: geonames-postgis
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_PASSWORD=geonames
+      - POSTGRES_USER=geonames
+      - POSTGRES_DB=geonames
