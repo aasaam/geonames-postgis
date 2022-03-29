@@ -14,7 +14,7 @@
   </p>
 </div>
 
-This database use stable version of `postgis/postgis:14-3.1-alpine`, that process data from [geonames.org](https://www.geonames.org/) and process countries, administrator code and geo names that featureClass is administrator area or population place.
+This database use stable version of `postgis/postgis:14-3.2-alpine`, that process data from [geonames.org](https://www.geonames.org/) and process countries, administrator code and geo names that featureClass is administrator area or population place.
 
 Database will automatic update using github action schedule.
 

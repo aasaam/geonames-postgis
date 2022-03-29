@@ -7,7 +7,7 @@ docker rm -f geonames-postgis || true
 docker rmi geonames-postgis || true
 
 echo "Bring data base up and store unclean data"
-docker pull postgis/postgis:14-3.1-alpine
+docker pull postgis/postgis:14-3.2-alpine
 docker build --no-cache --tag geonames-postgis -f Dockerfile.db .
 docker run --name geonames-postgis --name geonames-postgis \
   -v $(pwd)/init.db:/docker-entrypoint-initdb.d \

@@ -1,6 +1,7 @@
 name: ci
 
 on:
+  workflow_dispatch:
   schedule:
     - cron:  '0 0 * * 0'
 
@@ -32,7 +33,7 @@ jobs:
         name: golang
         uses: actions/setup-go@v2
         with:
-          go-version: '1.17.3'
+          go-version: '1.17.8'
       - run: go version
       -
         name: Build

@@ -1,4 +1,4 @@
-FROM postgis/postgis:14-3.1-alpine
+FROM postgis/postgis:14-3.2-alpine
 COPY init.db/pg.sql /docker-entrypoint-initdb.d/01-init.sql
 COPY var/geonames_extract /geonames_extract
 EXPOSE 5432
